@@ -5,52 +5,40 @@
 #include <assert.h>
 #include "rngs.h"
 
-#define TEST_REASON "Testing supplyCount(): "
+#define TEST_REASON "Testing supplyCount(): This test simply adds a card to the game state "\
+									  "with a given count and then tests to see if the correct count is returned when called"
 
-void checkSupplyCount(int p, struct gameState *post) {
+void checkSupplyCount(int card, int count, struct gameState *state) {
   int r;
     
-  r = supplyCount(p, post);
+  r = supplyCount(card, state);
 
-  printf("REASON: %s\n", TEST_REASON);
-
-  assert (r == 0);
+  assert (r == count);
 }
 
 int main() {
 
-	int i, p, r, deckCount, discardCount, supplyCount;
+	int p, r;
 
 	int k[10] = {adventurer, council_room, feast, gardens, mine,
 	       remodel, smithy, village, baron, great_hall};
 
 	struct gameState G;
 
-	printf ("Testing supplyCount.\n");
+	printf("%s\n", TEST_REASON);
 
 	SelectStream(2);
 	PutSeed(3);
 
 	printf ("SIMPLE FIXED TESTS.\n");
-  for (p = 0; p < 2; p++) {
-    for (deckCount = 0; deckCount < 5; deckCount++) {
-      for (discardCount = 0; discardCount < 5; discardCount++) {
-				for (supplyCount = 0; supplyCount < 5; supplyCount++) {
-				  memset(&G, 23, sizeof(struct gameState)); 
-				  r = initializeGame(2, k, 1, &G);
-				  G.deckCount[p] = deckCount;
-				  memset(G.deck[p], 0, sizeof(int) * deckCount);
-				  G.discardCount[p] = discardCount;
-				  memset(G.discard[p], 0, sizeof(int) * discardCount);
-				  G.supplyCount[p] = supplyCount;
-				  memset(G.hand[p], 0, sizeof(int) * supplyCount);
-				  checkSupplyCount(p, &G);
-				}
-      }
-    }
+  for (p = 0; p < 10; p++) {
+	  memset(&G, 23, sizeof(struct gameState)); 
+	  r = initializeGame(2, k, 1, &G);
+	  G.supplyCount[k[p]] = p;
+	  checkSupplyCount(k[p], p, &G);
   }
 
-	printf ("ALL TESTS OK\n");
+	printf ("ALL SUPPLY_COUNT TESTS OK\n\n");
 
 	exit(0);
 }
