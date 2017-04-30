@@ -72,5 +72,5 @@ clean:
 
 gitPush: clean
 	git add -A
-	git commit -m $GIT_MESSAGE
+	git commit -m $(GIT_MESSAGE)
 	git push origin HEAD
