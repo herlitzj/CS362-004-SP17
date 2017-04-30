@@ -800,6 +800,17 @@ int _mine(int *currentPlayer, struct gameState *state, int choice1, int choice2,
 
 int _gardens() { return -1; }
 
+int _village(int *currentPlayer, struct gameState *state, int handPos) {
+  //+1 Card
+  drawCard(*currentPlayer, state);
+  
+  //+2 Actions
+  state->numActions = state->numActions + 2;
+  
+  //discard played card from hand
+  discardCard(handPos, *currentPlayer, state, 0);
+  return 0;
+}
 
 
 // END CARDS //
@@ -839,14 +850,16 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return _smithy(&currentPlayer, state, handPos);
     case mine:
       return _mine(&currentPlayer, state, choice1, choice2, handPos);
-			
+    case village:
+      return _village(&currentPlayer, state, handPos);
+      
     case remodel:
       j = state->hand[currentPlayer][choice1];  //store card we will trash
 
       if ( (getCost(state->hand[currentPlayer][choice1]) + 2) > getCost(choice2) )
-    	{
-    	  return -1;
-    	}
+      {
+        return -1;
+      }
 
           gainCard(choice2, state, 0, currentPlayer);
 
@@ -855,26 +868,16 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
           //discard trashed card
           for (i = 0; i < state->handCount[currentPlayer]; i++)
-    	{
-    	  if (state->hand[currentPlayer][i] == j)
-    	    {
-    	      discardCard(i, currentPlayer, state, 0);			
-    	      break;
-    	    }
-    	}
+      {
+        if (state->hand[currentPlayer][i] == j)
+          {
+            discardCard(i, currentPlayer, state, 0);      
+            break;
+          }
+      }
 
       return 0;
-		
-    case village:
-      //+1 Card
-      drawCard(currentPlayer, state);
-			
-      //+2 Actions
-      state->numActions = state->numActions + 2;
-			
-      //discard played card from hand
-      discardCard(handPos, currentPlayer, state, 0);
-      return 0;
+    
 		
     case baron:
       state->numBuys++;//Increase buys by 1!
