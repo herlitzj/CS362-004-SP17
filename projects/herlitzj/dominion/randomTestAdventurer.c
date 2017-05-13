@@ -2,9 +2,11 @@
 #include "dominion_helpers.h"
 #include <string.h>
 #include <stdio.h>
+// #include <stdlib.h>
 #include <assert.h>
+// #include <math.h>
 #include "rngs.h"
-#include <time.h>
+// #include <time.h>
 
 #define DEBUG 0
 #define NOISY_TEST 1
@@ -16,62 +18,61 @@ int assertTrue(int A, int B) {
   };
 }
 
-int checkCouncilRoom(int numPlayers, int currentPlayer, struct gameState *post, int handPos) {
-  struct gameState pre;
-  memcpy (&pre, post, sizeof(struct gameState));
+int checkAdventurer(int currentPlayer, struct gameState *post) {
 
-  int i, r, failures=0;
-    
-  r = _council_room(&currentPlayer, post, handPos);
+  int i, r, z=0, cardDrawn=0, failures=0, drawntreasure=0;
+  int temphand[MAX_HAND];
+  
+  r = _adventurer(&currentPlayer, &drawntreasure, post, &z, temphand, &cardDrawn);
   failures += assertTrue(r, 0);
-  failures += assertTrue(pre.numBuys + 1, post->numBuys);
-
-  for(i = 0; i < numPlayers; i++) {
-    if(i != currentPlayer) {
-      failures += assertTrue(pre.deckCount[i] - 1, post->deckCount[i]);
-    } else {
-      failures += assertTrue(pre.deckCount[i] - 4, post->deckCount[i]);
-    }
-  }
+  failures += assertTrue(drawntreasure, 2);
 
   return failures;
 
 }
 
+void setRandomDeck(int player, struct gameState *game) {
+  int i, card;
+  game->deck[player][0] = copper;
+  game->deck[player][1] = silver;
+  game->deck[player][2] = gold;
+
+  for (i = 3; i <= game->deckCount[player]; i++) {
+    card = floor(Random() * baron) + curse;
+    game->deck[player][i] = card;
+  }
+
+  shuffle(player, game);
+}
+
 
 int main () {
 
-  int i, n, j, r, p, currentPlayer, failures=0;
+  int i, n, j, r, totalPlayers, currentPlayer, failures=0;
 
-  int k[10] = {adventurer, council_room, feast, gardens, mine,
-	       remodel, smithy, village, baron, great_hall};
 
-  struct gameState G;
+  SelectStream(2);
+  PutSeed(3);
 
   for (n = 0; n < 2000; n++) {
+    struct gameState G;
     for (i = 0; i < sizeof(struct gameState); i++) {
       ((char*)&G)[i] = floor(Random() * 256);
     }
+    
+    totalPlayers = floor(Random() * 2) + 2;
+    currentPlayer = floor(Random() * totalPlayers) + 1;
+    G.deckCount[currentPlayer] = floor(Random() * (MAX_DECK - 50)) + 50;
+    G.discardCount[currentPlayer] = floor(Random() * MAX_DECK);
+    G.handCount[currentPlayer] = floor(Random() * MAX_HAND);
+    setRandomDeck(currentPlayer, &G);
 
-    srand(time(NULL));
-    SelectStream(2);
-    PutSeed(rand() % 3 + 1);
-    
-    p = floor(Random() * 3) + 2;
-    r = initializeGame(p, k, 1, &G);
-    currentPlayer = floor(Random() * p) + 1;
-    
-    for(j = 1; j <= p; j++) {
-      G.deckCount[j] = floor(Random() * MAX_DECK);
-      G.discardCount[j] = floor(Random() * MAX_DECK);
-      G.handCount[j] = floor(Random() * MAX_HAND);
-      G.numBuys = 1;
-    }
-    failures += checkCouncilRoom(p, currentPlayer, &G, 0);
+    failures += checkAdventurer(currentPlayer, &G);
   }
+
   
-  if (failures > 0) printf("_COUNCIL_ROOM TESTS FAILED TO PASS WITH %d FAILURES\n\n", failures);
-  else printf ("ALL _COUNCIL_ROOM TESTS OK\n\n");
+  if (failures > 0) printf("_ADVENTURER TESTS FAILED TO PASS WITH %d FAILURES\n\n", failures);
+  else printf ("ALL _ADVENTURER TESTS OK\n\n");
 
   exit(0);
 

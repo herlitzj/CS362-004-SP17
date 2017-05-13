@@ -523,7 +523,8 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state) {
 }
 
 int drawCard(int player, struct gameState *state)
-{	int count;
+{	
+  int count;
   int deckCounter;
   if (state->deckCount[player] <= 0){//Deck is empty
     
@@ -650,17 +651,17 @@ int _adventurer(int *currentPlayer, int *drawntreasure, struct gameState *state,
     if (state->deckCount[*currentPlayer] <1){//if the deck is empty we need to shuffle discard and add to deck
       shuffle(*currentPlayer, state);
     }
-
     drawCard(*currentPlayer, state);
     
     *cardDrawn = state->hand[*currentPlayer][state->handCount[*currentPlayer]-1];//top card of hand is most recently drawn card.
     
-    if (*cardDrawn == copper || *cardDrawn == silver || *cardDrawn == gold)
-      *drawntreasure++;
+    if (*cardDrawn == copper || *cardDrawn == silver || *cardDrawn == gold){
+      *drawntreasure = *drawntreasure + 1;
+    }
     else {
       temphand[*z]=*cardDrawn;
-      state->handCount[*currentPlayer]++; //this should just remove the top card (the most recently drawn one). [BUG: should be -- NOT ++]
-      z++;
+      state->handCount[*currentPlayer]--; //this should just remove the top card (the most recently drawn one). [BUG: should be -- NOT ++]
+      *z=*z+1;
     }
   }
   
