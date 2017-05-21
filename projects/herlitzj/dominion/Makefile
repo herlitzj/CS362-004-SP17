@@ -29,6 +29,7 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
+
 randomTestCard1.out: randomTestCard1.c rngs.o dominion.o
 	gcc -o randomTestCard1.o -g randomTestCard1.c rngs.o dominion.o $(CFLAGS)
 	./randomTestCard1.o &> randomtestcard1.out
@@ -48,6 +49,42 @@ randomTestAdventurer.out: randomTestAdventurer.c rngs.o dominion.o
 	gcov -f dominion.c >> randomtestadventurer.out
 
 randomtestresults: randomTestCard1.o randomTestCard2.o randomTestAdventurer.o
+
+unitTest1.o: rngs.o dominion.o
+	gcc -o unitTest1.o -g unitTest1.c rngs.o dominion.o $(CFLAGS)
+
+unitTest2.o: rngs.o dominion.o
+	gcc -o unitTest2.o -g unitTest2.c rngs.o dominion.o $(CFLAGS)
+
+unitTest3.o: rngs.o dominion.o
+	gcc -o unitTest3.o -g unitTest3.c rngs.o dominion.o $(CFLAGS)
+
+unitTest4.o: rngs.o dominion.o
+	gcc -o unitTest4.o -g unitTest4.c rngs.o dominion.o $(CFLAGS)
+
+cardTest1.o: rngs.o dominion.o
+	gcc -o cardTest1.o -g cardTest1.c rngs.o dominion.o $(CFLAGS)
+
+cardTest2.o: rngs.o dominion.o
+	gcc -o cardTest2.o -g cardTest2.c rngs.o dominion.o $(CFLAGS)
+
+cardTest3.o: rngs.o dominion.o
+	gcc -o cardTest3.o -g cardTest3.c rngs.o dominion.o $(CFLAGS)
+
+cardTest4.o: rngs.o dominion.o
+	gcc -o cardTest4.o -g cardTest4.c rngs.o dominion.o $(CFLAGS)
+
+unittestresults.out: unitTest1.o unitTest2.o unitTest3.o unitTest4.o cardTest1.o cardTest2.o cardTest3.o cardTest4.o
+	./unitTest1.o &> unittestresult.out
+	./unitTest2.o >> unittestresult.out
+	./unitTest3.o >> unittestresult.out
+	./unitTest4.o >> unittestresult.out
+	./cardTest1.o >> unittestresult.out
+	./cardTest2.o >> unittestresult.out
+	./cardTest3.o >> unittestresult.out
+	./cardTest4.o >> unittestresult.out
+	echo TESTING COVERAGE SUMMARY >> unittestresult.out
+	gcov -f dominion.c >> unittestresult.out
 
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
