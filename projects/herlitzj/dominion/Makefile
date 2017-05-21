@@ -29,6 +29,25 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
+randomTestCard1.out: randomTestCard1.c rngs.o dominion.o
+	gcc -o randomTestCard1.o -g randomTestCard1.c rngs.o dominion.o $(CFLAGS)
+	./randomTestCard1.o &> randomtestcard1.out
+	echo TESTING COVERAGE SUMMARY >> randomtestcard1.out
+	gcov -f dominion.c >> randomtestcard1.out
+
+randomTestCard2.out: randomTestCard2.c rngs.o dominion.o
+	gcc -o randomTestCard2.o -g randomTestCard2.c rngs.o dominion.o $(CFLAGS)
+	./randomTestCard2.o &> randomtestcard2.out
+	echo TESTING COVERAGE SUMMARY >> randomtestcard2.out
+	gcov -f dominion.c >> randomtestcard2.out
+
+randomTestAdventurer.out: randomTestAdventurer.c rngs.o dominion.o
+	gcc -o randomTestAdventurer.o -g randomTestAdventurer.c dominion.o rngs.o $(CFLAGS)
+	./randomTestAdventurer.o &> randomtestadventurer.out
+	echo TESTING COVERAGE SUMMARY >> randomtestadventurer.out
+	gcov -f dominion.c >> randomtestadventurer.out
+
+randomtestresults: randomTestCard1.o randomTestCard2.o randomTestAdventurer.o
 
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
@@ -36,4 +55,5 @@ player: player.c interface.o
 all: playdom player testDrawCard testBuyCard badTestDrawCard
 
 clean:
-	rm -f *.o playdom.exe playdom test.exe test player player.exe testInit testInit.exe *.gcov *.gcda *.gcno *.so
+	rm -rf *.dSYM
+	rm -f *.o playdom.exe playdom test.exe test player player.exe testInit testInit.exe *.gcov *.gcda *.gcno *.so *.out
