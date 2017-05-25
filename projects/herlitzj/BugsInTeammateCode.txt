@@ -1,0 +1,7 @@
+cardTest1 had two failures when testing adventurer. They both returned incorrect counts for cards. This caused me to look into the code and I discovered that the drawntreasure for() loop had been modified to pick up 1 too many treasure cards. This needs to be fixed to be <2, not <3.
+
+randomTestAdventurer failed due to the same bug. It reported failure of all 2000 randomly generated tests.
+
+randomTestCard1 failed to pass all randomly generated tests of Council_Room. Again, card counts were off and in investigating the method, I found that the for() loop used to draw cards for the current player had been changed from <4 to <=4. Therefore 1 too many cards were drawn.
+
+randomTestCard2 failed to pass all randomly generated tests of Smithy. This was also due to card counts, as the drawcard for() loop had been changed from <3 to <4.
